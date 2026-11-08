@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZURK | Ultimate Diwali Universe</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:#fff1df;font-family:Arial,sans-serif;background:radial-gradient(ellipse at top,#612d70,#1a1031 55%,#080815);min-height:100vh;overflow-x:hidden}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+main{position:relative;z-index:1;max-width:1100px;margin:auto;padding:20px 16px 70px}
+header{text-align:center;padding:45px 0 50px}
+.gold{color:#ffd18a}
+h1{font-size:clamp(52px,11vw,110px);line-height:.95;margin:22px 0;background:linear-gradient(110deg,#fff7db,#ffc26f,#ff8bbd);background-clip:text;color:transparent}
+h2{text-align:center;font-size:clamp(27px,5vw,44px);margin:0 0 15px}
+p{color:#dfc9dc;line-height:1.7}
+.sub{letter-spacing:4px;font-size:12px;font-weight:bold;color:#ffd28a}
+button{cursor:pointer;font:inherit}
+.btn{padding:13px 19px;border:1px solid #ffd18a80;border-radius:30px;background:linear-gradient(120deg,#ffedb2,#ffc178);color:#321c37;font-weight:bold;margin:5px;box-shadow:0 6px 25px #ffad4930}
+.btn:active{transform:scale(.96)}
+section{margin:35px 0 80px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:15px;margin-top:30px}
+.card{background:linear-gradient(150deg,#58345b,#1a142c);border:1px solid #ffc98655;border-radius:22px;padding:10px 10px 20px;text-align:center;box-shadow:0 15px 35px #0005;transition:.2s}
+.card:hover{transform:translateY(-6px)}
+.card img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:15px;background:#3d2d48}
+.card h3{margin:13px 0 4px;font-size:23px}
+.card small{color:#f3bc94;font-size:11px}
+.card .btn{font-size:12px;padding:10px}
+.panel{border:1px solid #ffce8650;border-radius:24px;background:#261936cc;padding:28px;text-align:center;box-shadow:0 20px 45px #0004}
+.gift{font-size:90px;cursor:pointer;display:inline-block;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+#field{height:290px;position:relative;overflow:hidden;background:radial-gradient(circle at bottom,#603456,#151027);border-radius:18px;border:1px solid #ffffff30;margin:20px 0}
+.drop{position:absolute;top:-60px;font-size:42px;background:none;border:0;animation:fall var(--duration) linear forwards;touch-action:manipulation}
+@keyframes fall{to{top:310px;transform:rotate(60deg)}}
+.stats{display:flex;justify-content:center;gap:25px;color:#ffdf9d;font-weight:bold}
+dialog{background:linear-gradient(140deg,#512d59,#161126);color:white;border:1px solid #ffd18a;border-radius:25px;width:min(440px,92vw);padding:25px;text-align:center}
+dialog::backdrop{background:#000b}
+dialog img{height:180px;width:180px;object-fit:cover;border-radius:18px;border:2px solid #ffd18a}
+dialog p{color:#ffe0e7}
+footer{text-align:center;color:#c9a8c6;padding:25px}
+@media(max-width:550px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:17px}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<main>
+<header>
+<div class="sub">✦ A SPECIAL GIFT FROM AZURK ✦</div>
+<div style="font-size:70px;margin-top:25px">🪔✨🎆</div>
+<h1>HAPPY<br>DIWALI.</h1>
+<p>A little light. A lot of memories.<br>For the people who make every day brighter. ❤️</p>
+<button class="btn" onclick="fireworks(12)">🎆 FIREWORKS</button>
+<button class="btn" id="music" onclick="toggleMusic()">♫ MUSIC OFF</button>
+<button class="btn" onclick="document.getElementById('friends').scrollIntoView({behavior:'smooth'})">💌 SURPRISES</button>
+</header>
+
+<section id="friends">
+<div class="sub" style="text-align:center">OUR LITTLE UNIVERSE</div>
+<h2>✨ Five Legendary Souls ✨</h2>
+<p style="text-align:center">Tap a character to unlock their special Diwali wish!</p>
+<div class="cards" id="cards"></div>
+</section>
+
+<section>
+<h2>🎁 Mystery Diwali Gift</h2>
+<div class="panel">
+<div class="gift" onclick="openGift()" id="gift">🎁</div>
+<p id="giftText">A little surprise is waiting for you!</p>
+<button class="btn" onclick="openGift()">UNWRAP GIFT ✨</button>
+</div>
+</section>
+
+<section>
+<h2>🎮 DIYA DASH</h2>
+<div class="panel">
+<p>Catch diyas 🪔 and sweets 🍬! Avoid bombs 💣!<br>You have 25 seconds.</p>
+<div class="stats">
+<span>SCORE: <span id="score">0</span></span>
+<span>TIME: <span id="time">25</span>s</span>
+</div>
+<div id="field">
+<div id="overlay" style="position:absolute;inset:0;display:grid;place-content:center;z-index:2">
+<div style="font-size:55px">🪔🍬✨</div>
+<p>Ready to catch the light?</p>
+</div>
+</div>
+<button class="btn" onclick="startGame()">▶ START GAME</button>
+<p id="result"></p>
+</div>
+</section>
+
+<section>
+<div class="panel">
+<div style="font-size:65px">❤️🪔</div>
+<h2>A Message From Azurk</h2>
+<p>Celestia Di, Sneha Di, Starky Bhaiya and Kai Bhaiya — thank you for all the jokes, random conversations, caring moments and memories. May your lives be filled with happiness, success, love and unlimited mithai!</p>
+<p class="gold">With love, Azurk ✦</p>
+<button class="btn" onclick="fireworks(35)">🎇 GRAND FINALE</button>
+<button class="btn" onclick="sharePage()">💌 SHARE</button>
+</div>
+</section>
+
+<footer>Made with ❤️ by AZURK • Diwali Universe 2026</footer>
+</main>
+
+<dialog id="modal">
+<button class="btn" onclick="document.getElementById('modal').close()">✕ CLOSE</button>
+<div style="margin:15px">
+<img id="modalImg" alt="Original profile picture">
+</div>
+<div class="sub" id="modalRole"></div>
+<h2 id="modalName"></h2>
+<p id="modalWish"></p>
+<button class="btn" onclick="fireworks(12)">🎆 SEND FIREWORKS</button>
+</dialog>
+
+<script>
+const people=[
+{
+name:'Azurk',
+role:'THE LITTLE CHAOS CREATOR',
+emoji:'👑',
+img:'azurk.jpg',
+wish:'Happy Diwali from your favourite little troublemaker! May this year bring us more laughter, happiness and unforgettable memories. 😭✨'
+},
+{
+name:'Celestia',
+role:'THE BADMOSH DIDI',
+emoji:'😈',
+img:'celestia.jpg',
+wish:'Celestia Diii! 😭 Keep your badmashi but never stop smiling. Wishing the Queen of Chaos endless happiness, sweets and beautiful surprises! 🔥🪔'
+},
+{
+name:'Sneha Kumari',
+role:'THE MOUNTAIN STAR',
+emoji:'🏔️',
+img:'sneha.jpg',
+wish:'Sneha Diii! May your life be as beautiful as those mountains, full of peace, warmth and amazing adventures. Happy Diwali! 💙✨'
+},
+{
+name:'Starky',
+role:'THE BLUE THUNDER',
+emoji:'⚡',
+img:'starky.jpg',
+wish:'Starky Bhaiya! May your Diwali be more powerful than thunder, your luck unlimited and your snacks never-ending! ⚡😂'
+},
+{
+name:'Kai Hiwatari',
+role:'THE MYSTERY LEGEND',
+emoji:'🥷',
+img:'kai.jpg',
+wish:'Kai Bhaiya! Your secret identity is safe. May every mystery become a wonderful surprise and every dark night find its light! 🌑✨'
+}
+];
+
+const cards=document.getElementById('cards');
+people.forEach((p,i)=>{
+const card=document.createElement('div');
+card.className='card';
+const img=document.createElement('img');
+img.src=p.img;
+img.alt=p.name+' original DP';
+img.onerror=()=>{
+img.style.objectFit='contain';
+img.alt='Photo missing: '+p.img;
+};
+const name=document.createElement('h3');
+name.textContent=p.emoji+' '+p.name;
+const role=document.createElement('small');
+role.textContent=p.role;
+const btn=document.createElement('button');
+btn.className='btn';
+btn.textContent='OPEN WISH →';
+btn.onclick=()=>showPerson(i);
+card.append(img,name,role,document.createElement('br'),btn);
+cards.append(card);
+});
+
+function showPerson(i){
+const p=people[i];
+document.getElementById('modalImg').src=p.img;
+document.getElementById('modalName').textContent=p.name;
+document.getElementById('modalRole').textContent=p.role;
+document.getElementById('modalWish').textContent=p.wish;
+document.getElementById('modal').showModal();
+beep(660,.15);
+fireworks(5);
+}
+
+const gifts=[
+'May all your dreams shine brighter than fireworks! ✨',
+'Unlimited happiness and unlimited kaju katli! 🍬',
+'You unlocked 1000 imaginary laddoos! 😂',
+'May your friendships last forever! ❤️',
+'This year your luck will glow like a thousand diyas! 🪔'
+];
+function openGift(){
+const msg=gifts[Math.floor(Math.random()*gifts.length)];
+document.getElementById('giftText').textContent=msg;
+document.getElementById('gift').textContent='💝';
+fireworks(8);
+}
+
+let score=0,time=25,gameTimer=null,spawnTimer=null;
+function startGame(){
+clearInterval(gameTimer);
+clearInterval(spawnTimer);
+score=0;time=25;
+document.getElementById('score').textContent=score;
+document.getElementById('time').textContent=time;
+document.getElementById('result').textContent='';
+document.getElementById('overlay').style.display='none';
+document.getElementById('field').querySelectorAll('.drop').forEach(x=>x.remove());
+spawnTimer=setInterval(spawn,520);
+gameTimer=setInterval(()=>{
+time--;
+document.getElementById('time').textContent=time;
+if(time<=0)endGame();
+},1000);
+}
+
+function spawn(){
+const field=document.getElementById('field');
+const bad=Math.random()<.2;
+const el=document.createElement('button');
+el.className='drop';
+el.textContent=bad?'💣':Math.random()<.5?'🪔':'🍬';
+el.style.left=(Math.random()*80+5)+'%';
+el.style.setProperty('--duration',(2+Math.random()*1.4)+'s');
+el.onclick=()=>{
+score+=bad?-5:10;
+document.getElementById('score').textContent=score;
+beep(bad?180:650,.09);
+el.remove();
+};
+field.append(el);
+setTimeout(()=>el.remove(),3600);
+}
+
+function endGame(){
+clearInterval(gameTimer);
+clearInterval(spawnTimer);
+document.getElementById('field').querySelectorAll('.drop').forEach(x=>x.remove());
+document.getElementById('overlay').style.display='grid';
+document.getElementById('result').textContent=
+'FINAL SCORE: '+score+(score>=150?' 🏆 DIWALI CHAMPION!':' ✨ Play again!');
+fireworks(15);
+}
+
+const canvas=document.getElementById('sky');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resize(){
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+}
+addEventListener('resize',resize);
+resize();
+
+function fireworks(n=6){
+for(let j=0;j<n;j++){
+const x=Math.random()*canvas.width;
+const y=Math.random()*canvas.height*.65;
+const hue=Math.random()*360;
+for(let i=0;i<35;i++){
+const a=Math.random()*Math.PI*2;
+const s=1+Math.random()*4;
+particles.push({
+x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,
+life:65,hue
+});
+}
+}
+beep(800,.1);
+}
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+particles=particles.filter(p=>p.life>0);
+particles.forEach(p=>{
+p.x+=p.vx;p.y+=p.vy;p.vy+=.025;p.life--;
+ctx.globalAlpha=p.life/65;
+ctx.fillStyle='hsl('+p.hue+' 100% 70%)';
+ctx.beginPath();
+ctx.arc(p.x,p.y,2.2,0,Math.PI*2);
+ctx.fill();
+});
+ctx.globalAlpha=1;
+requestAnimationFrame(animate);
+}
+animate();
+
+let audioCtx=null,musicOn=false,musicTimer=null,note=0;
+const melody=[392,440,523,587,523,440,392,330,349,392,440,523,440,392];
+function beep(freq=440,d=.15){
+try{
+if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+if(audioCtx.state==='suspended')audioCtx.resume();
+const o=audioCtx.createOscillator();
+const g=audioCtx.createGain();
+o.type='sine';
+o.frequency.value=freq;
+g.gain.setValueAtTime(.045,audioCtx.currentTime);
+g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);
+o.connect(g);g.connect(audioCtx.destination);
+o.start();o.stop(audioCtx.currentTime+d);
+}catch(e){}
+}
+function toggleMusic(){
+musicOn=!musicOn;
+document.getElementById('music').textContent=musicOn?'♫ MUSIC ON':'♫ MUSIC OFF';
+clearInterval(musicTimer);
+if(musicOn){
+beep(melody[note++%melody.length],.27);
+musicTimer=setInterval(()=>beep(melody[note++%melody.length],.27),330);
+}
+}
+function sharePage(){
+if(navigator.share){
+navigator.share({title:'AZURK Diwali Universe',url:location.href}).catch(()=>{});
+}else if(navigator.clipboard){
+navigator.clipboard.writeText(location.href).then(()=>alert('Link copied!'));
+}
+}
+setTimeout(()=>fireworks(4),900);
+</script>
+</body>
+  </html>
+  
